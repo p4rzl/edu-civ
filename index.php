@@ -82,8 +82,34 @@ require_once __DIR__ . '/includes/header.php';
             Espone la tua etichetta con QR code in bancarella e mostra ai clienti la storia del prodotto:
             area di pesca, qualita dell'acqua e indicatori ambientali.
         </p>
+        <p class="partner-note">Un unico standard digitale per fiducia, trasparenza e valorizzazione del pescato locale.</p>
+        <div class="cert-highlights">
+            <span class="highlight">Tracciabilita certificata</span>
+            <span class="highlight">Qualita acqua verificata</span>
+            <span class="highlight">Filiera locale controllata</span>
+        </div>
     </div>
     <a class="btn btn-primary" href="register.php">Diventa partner</a>
 </section>
 
+<section class="section container reveal">
+    <h2 style="text-align: center; margin-bottom: 1.5rem;">Dati marini in tempo reale</h2>
+    <div class="charts-grid">
+        <div class="card chart-card">
+            <h3>Qualita dell'acqua (ultimi 7 giorni)</h3>
+            <canvas id="qualityChart"></canvas>
+        </div>
+        <div class="card chart-card">
+            <h3>Microplastiche rilevate</h3>
+            <canvas id="microplasticsChart"></canvas>
+        </div>
+        <div class="card chart-card">
+            <h3>Status boe monitoraggio</h3>
+            <canvas id="buoyStatusChart"></canvas>
+        </div>
+    </div>
+</section>
+
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+
+
