@@ -19,13 +19,16 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    width: 100%;
+    overflow-x: clip;
 }
 
 body {
     font-family: 'Outfit', sans-serif;
     color: var(--ink);
     background: var(--bg);
-    overflow-x: hidden;
+    overflow-x: clip;
+    overscroll-behavior: none;
     display: flex;
     flex-direction: column;
 }
@@ -198,10 +201,10 @@ main {
 
 .hero {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
     gap: 2rem;
-    padding: 4.5rem 0 2.5rem;
-    align-items: center;
+    padding: 4.5rem 0 2.1rem;
+    align-items: start;
     animation: fadeSlideIn 0.85s ease both;
 }
 
@@ -235,6 +238,25 @@ h1 {
     gap: 0.8rem;
     margin-top: 1.5rem;
     flex-wrap: wrap;
+}
+
+.hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.15rem;
+}
+
+.hero-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.72rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--brand);
+    background: rgba(0, 119, 182, 0.08);
+    border: 1px solid rgba(0, 119, 182, 0.16);
 }
 
 .btn {
@@ -287,13 +309,93 @@ h1 {
 
 .floating-card {
     padding: 1.3rem;
-    animation: bob 4s ease-in-out infinite, softPulse 3.2s ease-in-out infinite;
+    animation: softPulse 3.2s ease-in-out infinite;
 }
 
 .floating-card ul {
     margin: 0;
     padding-left: 1.1rem;
     line-height: 1.8;
+}
+
+.telemetry-panel {
+    display: grid;
+    gap: 0.95rem;
+    min-height: auto;
+    animation: none;
+}
+
+.telemetry-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.telemetry-head h3 {
+    margin-bottom: 0;
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.62rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #076a57;
+    background: rgba(7, 106, 87, 0.12);
+    border: 1px solid rgba(7, 106, 87, 0.24);
+}
+
+.telemetry-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+}
+
+.metric-item {
+    padding: 0.7rem;
+    border: 1px solid rgba(4, 36, 61, 0.1);
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.metric-item p {
+    margin: 0 0 0.2rem;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+}
+
+.metric-item strong {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 1.04rem;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.metric-bar {
+    display: block;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(0, 119, 182, 0.12);
+    overflow: hidden;
+}
+
+.metric-bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(120deg, var(--brand), var(--brand-2));
+}
+
+.telemetry-note {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
 }
 
 @keyframes bob {
@@ -540,7 +642,7 @@ th {
 
 .footer-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr 0.8fr;
+    grid-template-columns: 1.3fr 1fr 1fr 1fr;
     gap: 1rem;
 }
 
@@ -689,14 +791,6 @@ th {
     align-items: stretch;
 }
 
-.hero-svg {
-    width: 100%;
-    max-height: 118px;
-    object-fit: contain;
-    margin-bottom: 0.6rem;
-    opacity: 0.85;
-}
-
 .dynamic-grid {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr 1.1fr;
@@ -762,6 +856,237 @@ th {
     border-left: 5px solid rgba(0, 119, 182, 0.3);
 }
 
+.section-head {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: 1.05rem;
+}
+
+.section-head h2 {
+    max-width: 680px;
+    margin-bottom: 0;
+}
+
+.home-overview {
+    padding-top: 2.15rem;
+}
+
+.skyline-decor {
+    margin-top: 0.1rem;
+    margin-bottom: 0.6rem;
+    pointer-events: none;
+}
+
+.skyline-track {
+    display: grid;
+    grid-template-columns: 1fr 0.75fr 1fr;
+    align-items: end;
+    gap: 1.1rem;
+    padding: 0.7rem 0.5rem 0.2rem;
+    border-bottom: 1px solid rgba(0, 119, 182, 0.2);
+}
+
+.skyline-item {
+    width: 100%;
+    height: 74px;
+    object-fit: contain;
+    object-position: center bottom;
+    opacity: 0.75;
+}
+
+.skyline-center {
+    height: 58px;
+    opacity: 0.6;
+}
+
+.editorial-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+}
+
+.editorial-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.35rem;
+    margin-bottom: 1.25rem;
+}
+
+.text-block {
+    position: relative;
+    padding: 0.15rem 0.2rem 0.8rem;
+    border-bottom: 1px solid rgba(4, 36, 61, 0.11);
+}
+
+.text-block h3 {
+    margin-bottom: 0.6rem;
+    font-size: 1.35rem;
+}
+
+.text-block p {
+    margin: 0;
+    line-height: 1.75;
+    color: var(--ink-soft);
+}
+
+.process-panel {
+    padding: 1rem 1rem 0.95rem;
+    border-radius: 0.95rem;
+    border: 1px solid rgba(0, 119, 182, 0.16);
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.process-panel h3 {
+    margin-bottom: 0.8rem;
+}
+
+.process-list {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.8rem;
+}
+
+.process-list li {
+    color: var(--ink);
+}
+
+.process-list span {
+    display: block;
+    color: var(--ink-soft);
+    margin-top: 0.2rem;
+    line-height: 1.5;
+}
+
+.capabilities-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.15rem;
+    margin-top: 0.8rem;
+    padding-top: 0.95rem;
+    border-top: 1px solid rgba(4, 36, 61, 0.1);
+}
+
+.capability-item {
+    padding: 0.25rem 0.2rem;
+}
+
+.capability-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 0.65rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand);
+    background: rgba(0, 119, 182, 0.1);
+    margin-bottom: 0.6rem;
+}
+
+.capability-item h3 {
+    margin-bottom: 0.55rem;
+    font-size: 1.1rem;
+}
+
+.capability-item p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--ink-soft);
+}
+
+.no-card-overview .section-head {
+    margin-bottom: 1.4rem;
+}
+
+.certification-showcase {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 1.2rem;
+    border: 1px solid rgba(0, 119, 182, 0.16);
+    border-radius: 1rem;
+    padding: 1.2rem;
+    background:
+        linear-gradient(125deg, rgba(255, 220, 168, 0.34), rgba(0, 167, 181, 0.1)),
+        rgba(255, 255, 255, 0.6);
+}
+
+.cert-copy h2 {
+    margin-bottom: 0.75rem;
+}
+
+.cert-copy p {
+    color: var(--ink-soft);
+    line-height: 1.6;
+}
+
+.cert-list {
+    list-style: none;
+    margin: 1rem 0 1.1rem;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.cert-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    color: var(--ink);
+    font-weight: 500;
+}
+
+.cert-list i {
+    color: #0f8d6f;
+    margin-top: 2px;
+}
+
+.cert-visual {
+    display: grid;
+    align-items: center;
+}
+
+.qr-preview {
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(4, 36, 61, 0.12);
+    border-radius: 0.9rem;
+    padding: 1rem;
+    box-shadow: 0 14px 24px rgba(3, 41, 67, 0.1);
+}
+
+.qr-grid {
+    width: 96px;
+    height: 96px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin-bottom: 0.8rem;
+}
+
+.qr-grid span {
+    display: block;
+    border-radius: 2px;
+    background: #0b2f4a;
+}
+
+.qr-grid span:nth-child(2n) {
+    background: #0f89a2;
+}
+
+.qr-preview h3 {
+    margin-bottom: 0.5rem;
+}
+
+.qr-preview p {
+    margin: 0 0 0.25rem;
+    color: var(--ink-soft);
+}
+
+.section-title-center {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
 #buoyChart {
     width: 100%;
     min-height: 320px;
@@ -792,7 +1117,7 @@ th {
 .buyer-page,
 .fisherman-page,
 .product-page {
-    overflow-y: auto;
+    overflow-y: visible;
 }
 
 @media (max-width: 920px) {
@@ -813,6 +1138,33 @@ th {
             'n1'
             'n2'
             'n3';
+    }
+
+    .telemetry-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .skyline-track {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.5rem;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .skyline-item {
+        height: 62px;
+    }
+
+    .editorial-layout,
+    .editorial-grid,
+    .capabilities-row,
+    .certification-showcase {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .text-block {
+        padding-bottom: 0.85rem;
     }
 
     .promo-banner {
