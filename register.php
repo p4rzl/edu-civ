@@ -10,14 +10,16 @@ if (isLoggedIn()) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $fullName = trim($_POST['full_name'] ?? '');
+    $firstName = trim($_POST['first_name'] ?? '');
+    $lastName = trim($_POST['last_name'] ?? '');
+    $fullName = trim($firstName . ' ' . $lastName);
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
     $role = $_POST['role'] ?? '';
 
-    if ($fullName === '' || $username === '' || $email === '' || $password === '' || $confirm === '') {
+    if ($firstName === '' || $lastName === '' || $username === '' || $email === '' || $password === '' || $confirm === '') {
         setFlash('error', 'Compila tutti i campi obbligatori.');
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         setFlash('error', 'Email non valida.');
@@ -56,23 +58,47 @@ require_once __DIR__ . '/includes/header.php';
 
 <section class="section container form-wrap reveal">
     <h1>Crea il tuo account Lanz</h1>
-    <form method="post" class="form-card">
-        <label>Nome e cognome
-            <input type="text" name="full_name" required>
-        </label>
+    <p class="helper-text">Scegli il tuo ruolo in registrazione. In login non verra piu richiesto.</p>
+    <form method="post" class="form-card auth-card">
+        <div class="name-split">
+            <label>Nome
+                <input type="text" name="first_name" autocomplete="given-name" required>
+            </label>
+            <label>Cognome
+                <input type="text" name="last_name" autocomplete="family-name" required>
+            </label>
+        </div>
         <label>Username
             <input type="text" name="username" required>
         </label>
         <label>Email
             <input type="email" name="email" required>
         </label>
-        <label>Ruolo
-            <select name="role" required>
-                <option value="">Seleziona ruolo</option>
-                <option value="compratore">Compratore</option>
-                <option value="pescatore">Pescatore</option>
-            </select>
-        </label>
+        <div class="role-select">
+            <span class="role-label">Ruolo account</span>
+            <div class="role-grid">
+                <label class="role-option">
+                    <input type="radio" name="role" value="compratore" required>
+                    <span class="role-card">
+                        <span class="role-icon" aria-hidden="true"><i class="bi bi-cart"></i></span>
+                        <span class="role-text">
+                            <strong>Compratore</strong>
+                            <small>Acquisto e recensioni</small>
+                        </span>
+                    </span>
+                </label>
+                <label class="role-option">
+                    <input type="radio" name="role" value="pescatore" required>
+                    <span class="role-card">
+                        <span class="role-icon" aria-hidden="true"><i class="bi bi-water"></i></span>
+                        <span class="role-text">
+                            <strong>Pescatore</strong>
+                            <small>Richieste e certificazioni</small>
+                        </span>
+                    </span>
+                </label>
+            </div>
+        </div>
         <label>Password
             <input type="password" name="password" minlength="8" required>
         </label>

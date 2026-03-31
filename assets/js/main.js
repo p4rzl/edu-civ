@@ -1,20 +1,40 @@
 const menuToggle = document.getElementById('menuToggle');
 const navLinks = document.getElementById('navLinks');
+const headerTools = document.getElementById('headerTools');
 
-if (menuToggle && navLinks) {
+if (menuToggle) {
     menuToggle.addEventListener('click', () => {
-        navLinks.classList.toggle('open');
+        if (navLinks) {
+            navLinks.classList.toggle('open');
+        }
+        if (headerTools) {
+            headerTools.classList.toggle('open');
+        }
     });
 }
 
 const notifyToggle = document.getElementById('notifyToggle');
 const notifyMenu = document.getElementById('notifyMenu');
+const userMenuToggle = document.getElementById('userMenuToggle');
+const userMenu = document.getElementById('userMenu');
+const settingsToggle = document.getElementById('settingsToggle');
+const settingsModal = document.getElementById('userSettingsModal');
+const openAddProductModal = document.getElementById('openAddProductModal');
+const addProductModal = document.getElementById('addProductModal');
+const themeToggleHeader = document.getElementById('themeToggleHeader');
 
 if (notifyToggle && notifyMenu) {
     notifyToggle.addEventListener('click', () => {
         const isOpen = notifyMenu.classList.toggle('open');
         notifyToggle.setAttribute('aria-expanded', String(isOpen));
         notifyMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+        if (userMenu) {
+            userMenu.classList.remove('open');
+            if (userMenuToggle) {
+                userMenuToggle.setAttribute('aria-expanded', 'false');
+            }
+            userMenu.setAttribute('aria-hidden', 'true');
+        }
     });
 
     document.addEventListener('click', (event) => {
@@ -28,6 +48,109 @@ if (notifyToggle && notifyMenu) {
             notifyToggle.setAttribute('aria-expanded', 'false');
             notifyMenu.setAttribute('aria-hidden', 'true');
         }
+
+        if (userMenu && userMenuToggle && !userMenu.contains(target) && !userMenuToggle.contains(target)) {
+            userMenu.classList.remove('open');
+            userMenuToggle.setAttribute('aria-expanded', 'false');
+            userMenu.setAttribute('aria-hidden', 'true');
+        }
+    });
+}
+
+if (userMenuToggle && userMenu) {
+    userMenuToggle.addEventListener('click', () => {
+        const isOpen = userMenu.classList.toggle('open');
+        userMenuToggle.setAttribute('aria-expanded', String(isOpen));
+        userMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+        if (notifyMenu && notifyToggle) {
+            notifyMenu.classList.remove('open');
+            notifyToggle.setAttribute('aria-expanded', 'false');
+            notifyMenu.setAttribute('aria-hidden', 'true');
+        }
+    });
+}
+
+if (settingsToggle) {
+    settingsToggle.addEventListener('click', () => {
+        if (settingsModal) {
+            settingsModal.classList.add('open');
+            settingsModal.setAttribute('aria-hidden', 'false');
+            settingsToggle.setAttribute('aria-expanded', 'true');
+            return;
+        }
+
+        window.location.href = 'dashboard.php';
+    });
+}
+
+if (openAddProductModal && addProductModal) {
+    openAddProductModal.addEventListener('click', () => {
+        addProductModal.classList.add('open');
+        addProductModal.setAttribute('aria-hidden', 'false');
+    });
+}
+
+document.querySelectorAll('[data-modal-close]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const modalId = button.getAttribute('data-modal-close');
+        if (!modalId) {
+            return;
+        }
+
+        const modal = document.getElementById(modalId);
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        if (settingsToggle && modalId === 'userSettingsModal') {
+            settingsToggle.setAttribute('aria-expanded', 'false');
+        }
+
+        modal.dispatchEvent(new CustomEvent('modal:closed', { bubbles: true }));
+    });
+});
+
+const settingsTabs = document.querySelectorAll('[data-settings-tab]');
+const settingsPanes = document.querySelectorAll('[data-settings-pane]');
+
+settingsTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-settings-tab');
+        if (!target) {
+            return;
+        }
+
+        settingsTabs.forEach((item) => item.classList.remove('is-active'));
+        settingsPanes.forEach((pane) => {
+            pane.classList.toggle('is-active', pane.getAttribute('data-settings-pane') === target);
+        });
+        tab.classList.add('is-active');
+    });
+});
+
+const setTheme = (theme) => {
+    const isDark = theme === 'dark';
+    document.body.classList.toggle('theme-dark', isDark);
+    if (themeToggleHeader) {
+        themeToggleHeader.setAttribute('aria-pressed', String(isDark));
+        themeToggleHeader.setAttribute('aria-label', isDark ? 'Passa al tema chiaro' : 'Passa al tema scuro');
+        const icon = themeToggleHeader.querySelector('i');
+        if (icon) {
+            icon.className = isDark ? 'bi bi-moon-stars' : 'bi bi-sun';
+        }
+    }
+};
+
+const preferredTheme = window.localStorage.getItem('lanz-theme') || 'light';
+setTheme(preferredTheme);
+
+if (themeToggleHeader) {
+    themeToggleHeader.addEventListener('click', () => {
+        const next = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
+        window.localStorage.setItem('lanz-theme', next);
+        setTheme(next);
     });
 }
 

@@ -61,20 +61,12 @@ if ($user && isset($pdo)) {
             </a>
             <button class="menu-toggle" aria-label="Apri menu" id="menuToggle">Menu</button>
             <ul class="nav-links" id="navLinks">
-                <li><a href="index.php"><i class="bi bi-house-door"></i> Home</a></li>
-                <?php if ($user): ?>
-                    <?php if ($user['role'] !== 'admin'): ?>
-                        <li><a href="dashboard.php"><i class="bi bi-grid"></i> Pannello personale</a></li>
-                    <?php endif; ?>
-                    <?php if ($user['role'] === 'admin'): ?>
-                        <li><a href="admin.php" class="btn-nav"><i class="bi bi-shield-lock"></i> Controllo Admin</a></li>
-                    <?php endif; ?>
-                    <li><a href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-                <?php else: ?>
+                <?php if (!$user): ?>
                     <li><a class="btn-nav" href="login.php"><i class="bi bi-person-circle"></i> Accedi / Registrati</a></li>
                 <?php endif; ?>
             </ul>
             <?php if ($user): ?>
+                <div class="header-tools" id="headerTools">
                 <div class="notify-wrap">
                     <button id="notifyToggle" class="notify-btn" type="button" aria-label="Apri notifiche" aria-expanded="false">
                         <i class="bi bi-bell"></i>
@@ -91,14 +83,35 @@ if ($user && isset($pdo)) {
                                 <?php foreach ($quickNotifications as $note): ?>
                                     <li>
                                         <p><?= e((string) $note['message']) ?></p>
-                                        <?php if (!empty($note['link'])): ?>
-                                            <a href="<?= e((string) $note['link']) ?>">Apri</a>
-                                        <?php endif; ?>
+                                        <span class="small"><?= e((string) $note['created_at']) ?></span>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
                         <?php endif; ?>
                     </div>
+                </div>
+                <div class="user-wrap">
+                    <button id="userMenuToggle" class="notify-btn user-btn" type="button" aria-label="Apri menu utente" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i>
+                    </button>
+                    <div id="userMenu" class="notify-menu user-menu" aria-hidden="true">
+                        <h4>Profilo</h4>
+                        <ul>
+                            <?php if ($user['role'] !== 'admin'): ?>
+                                <li><a href="dashboard.php"><i class="bi bi-grid"></i> Pannello personale</a></li>
+                            <?php else: ?>
+                                <li><a href="admin.php"><i class="bi bi-shield-lock"></i> Area amministrazione</a></li>
+                            <?php endif; ?>
+                            <li><a href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <button id="settingsToggle" class="notify-btn settings-btn" type="button" aria-label="Apri impostazioni" aria-expanded="false">
+                    <i class="bi bi-gear"></i>
+                </button>
+                <button id="themeToggleHeader" class="notify-btn theme-header-btn" type="button" aria-label="Cambia tema" aria-pressed="false">
+                    <i class="bi bi-sun"></i>
+                </button>
                 </div>
             <?php endif; ?>
         </nav>

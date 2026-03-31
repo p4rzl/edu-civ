@@ -257,12 +257,12 @@ $pendingRequests = $pdo->query(
      ORDER BY pr.requested_at DESC'
 )->fetchAll();
 
-$approvedRequests = $pdo->query(
+$processedRequests = $pdo->query(
     'SELECT pr.*, u.full_name AS fisherman_name
      FROM product_requests pr
      JOIN users u ON u.id = pr.fisherman_id
-     WHERE pr.status = "approved"
-     ORDER BY pr.approved_at DESC'
+     WHERE pr.status IN ("approved", "rejected")
+     ORDER BY COALESCE(pr.approved_at, pr.requested_at) DESC'
 )->fetchAll();
 
 $pageTitle = 'Admin - Lanz';
@@ -328,31 +328,50 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <section class="section container reveal">
-    <h2><i class="bi bi-qr-code"></i> Richieste approvate</h2>
+    <h2><i class="bi bi-qr-code"></i> Esito richieste prodotto</h2>
     <div class="table-wrap card">
         <table>
             <thead>
                 <tr>
+                    <th>Stato</th>
                     <th>Pescatore</th>
                     <th>Richiedente</th>
                     <th>Prodotto</th>
                     <th>Codice univoco</th>
-                    <th>Approvata il</th>
+                    <th>QR</th>
+                    <th>Data esito</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (!$approvedRequests): ?>
+                <?php if (!$processedRequests): ?>
                     <tr>
-                        <td colspan="5" class="helper-text">Nessuna richiesta approvata al momento.</td>
+                        <td colspan="7" class="helper-text">Nessuna richiesta elaborata al momento.</td>
                     </tr>
                 <?php else: ?>
-                    <?php foreach ($approvedRequests as $req): ?>
+                    <?php foreach ($processedRequests as $req): ?>
                         <tr>
+                            <td>
+                                <span class="status-led <?= $req['status'] === 'approved' ? 'is-green' : 'is-red' ?>">
+                                    <?= $req['status'] === 'approved' ? 'Approvata' : 'Rifiutata' ?>
+                                </span>
+                            </td>
                             <td><?= e((string) $req['fisherman_name']) ?></td>
                             <td><?= e((string) $req['requester_name']) ?></td>
                             <td><?= e((string) $req['fish_type']) ?></td>
-                            <td><?= e((string) $req['generated_code']) ?></td>
-                            <td><?= e((string) ($req['approved_at'] ?? 'N/D')) ?></td>
+                            <td><?= e((string) ($req['generated_code'] ?? '-')) ?></td>
+                            <td>
+                                <?php if ($req['status'] === 'approved' && !empty($req['generated_code'])): ?>
+                                    <div class="qr-stack qr-stack-premium">
+                                        <div class="qr-mini" data-qr-text="<?= e((string) $req['generated_code']) ?>"></div>
+                                        <button type="button" class="qr-zoom" data-qr-text="<?= e((string) $req['generated_code']) ?>" aria-label="Ingrandisci QR">
+                                            <i class="bi bi-zoom-in"></i>
+                                        </button>
+                                    </div>
+                                <?php else: ?>
+                                    <span class="small">Non disponibile</span>
+                                <?php endif; ?>
+                            </td>
+                            <td><?= e((string) ($req['approved_at'] ?? $req['requested_at'] ?? 'N/D')) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -360,6 +379,13 @@ require_once __DIR__ . '/includes/header.php';
         </table>
     </div>
 </section>
+
+<div id="qrModal" class="qr-modal" aria-hidden="true">
+    <div class="qr-modal-content">
+        <button type="button" id="closeQrModal" class="btn btn-danger">Chiudi</button>
+        <div id="qrModalCanvas"></div>
+    </div>
+</div>
 
 <section class="section container reveal">
     <h2><i class="bi bi-table"></i> Elenco utenti</h2>
@@ -546,6 +572,7 @@ require_once __DIR__ . '/includes/header.php';
     defer
 ></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <script>
     window.USERS_DATA = <?= json_encode($users, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     window.BUOYS_DATA = <?= json_encode($buoys, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
@@ -553,5 +580,6 @@ require_once __DIR__ . '/includes/header.php';
 </script>
 <script src="assets/js/admin-map.js" defer></script>
 <script src="assets/js/admin-panel.js" defer></script>
+<script src="assets/js/product-qr.js" defer></script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
