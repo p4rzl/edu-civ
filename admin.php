@@ -90,41 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if ($action === 'simulate_update') {
-        $buoyId = (int) ($_POST['simulate_buoy_id'] ?? 0);
-
-        if ($buoyId <= 0) {
-            setFlash('error', 'Seleziona una boa valida per simulare l\'aggiornamento.');
-        } else {
-            $now = date('Y-m-d H:i');
-            $salinity = mt_rand(365, 390) / 10;
-            $oxygen = mt_rand(64, 82) / 10;
-            $microplastics = mt_rand(5, 17) / 10;
-
-            $insert = $pdo->prepare(
-                'INSERT INTO buoy_readings (
-                    buoy_id, salinity, dissolved_oxygen, microplastics_percent, recorded_at
-                ) VALUES (
-                    :buoy_id, :salinity, :dissolved_oxygen, :microplastics_percent, :recorded_at
-                )'
-            );
-            $insert->bindValue(':buoy_id', $buoyId, PDO::PARAM_INT);
-            $insert->bindValue(':salinity', $salinity);
-            $insert->bindValue(':dissolved_oxygen', $oxygen);
-            $insert->bindValue(':microplastics_percent', $microplastics);
-            $insert->bindValue(':recorded_at', $now);
-            $insert->execute();
-
-            $update = $pdo->prepare('UPDATE buoys SET status = :status, last_update = :last_update WHERE id = :id');
-            $update->bindValue(':id', $buoyId, PDO::PARAM_INT);
-            $update->bindValue(':status', 'Online');
-            $update->bindValue(':last_update', $now);
-            $update->execute();
-
-            setFlash('success', 'Aggiornamento fittizio registrato con successo.');
-        }
-    }
-
     if ($action === 'approve_request') {
         $requestId = (int) ($_POST['request_id'] ?? 0);
         $adminId = (int) (currentUser()['id'] ?? 0);
@@ -307,7 +272,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <section class="section container reveal">
     <h1>Pannello Amministratore Lanz</h1>
-    <p class="lead">Gestione operativa completa: utenti registrati, boe, posizioni, telemetria e aggiornamenti fittizi.</p>
+    <p class="lead">Gestione operativa completa: utenti registrati, boe, posizioni e telemetria.</p>
 </section>
 
 <section class="section container reveal">
@@ -397,79 +362,6 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <section class="section container reveal">
-    <div class="admin-layout">
-        <article class="card admin-card">
-            <h2><i class="bi bi-people"></i> Modifica utenti registrati</h2>
-            <form method="post" id="userEditForm" class="form-card compact-form">
-                <input type="hidden" name="action" value="update_user">
-                <label>Utente da modificare
-                    <select name="user_id" id="userSelect" required>
-                        <?php foreach ($users as $item): ?>
-                            <option value="<?= e((string) $item['id']) ?>"><?= e((string) $item['full_name']) ?> (<?= e((string) $item['role']) ?>)</option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
-                <label>Nome completo
-                    <input type="text" name="full_name" id="userFullName" required>
-                </label>
-                <label>Username
-                    <input type="text" name="username" id="userUsername" required>
-                </label>
-                <label>Email
-                    <input type="email" name="email" id="userEmail" required>
-                </label>
-                <label>Ruolo
-                    <select name="role" id="userRole" required>
-                        <option value="compratore">Compratore</option>
-                        <option value="pescatore">Pescatore</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </label>
-                <button class="btn btn-primary" type="submit"><i class="bi bi-pencil-square"></i> Salva profilo</button>
-            </form>
-        </article>
-
-        <article class="card admin-card">
-            <h2><i class="bi bi-broadcast-pin"></i> Gestione boe e posizione</h2>
-            <form method="post" id="buoyEditForm" class="form-card compact-form">
-                <input type="hidden" name="action" value="update_buoy">
-                <label>Boa da modificare
-                    <select name="buoy_id" id="buoySelect" required>
-                        <?php foreach ($buoys as $buoy): ?>
-                            <option value="<?= e((string) $buoy['id']) ?>"><?= e((string) $buoy['name']) ?> - <?= e((string) $buoy['zone']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
-                <label>Nome boa
-                    <input type="text" name="name" id="buoyName" required>
-                </label>
-                <label>Zona
-                    <input type="text" name="zone" id="buoyZone" required>
-                </label>
-                <div class="split">
-                    <label>Latitudine
-                        <input type="number" name="lat" id="buoyLat" step="0.0001" required>
-                    </label>
-                    <label>Longitudine
-                        <input type="number" name="lng" id="buoyLng" step="0.0001" required>
-                    </label>
-                </div>
-                <label>Stato
-                    <input type="text" name="status" id="buoyStatus" required>
-                </label>
-                <button class="btn btn-primary" type="submit"><i class="bi bi-geo-alt"></i> Aggiorna boa</button>
-            </form>
-
-            <form method="post" class="simulate-form">
-                <input type="hidden" name="action" value="simulate_update">
-                <input type="hidden" name="simulate_buoy_id" id="simulateBuoyId" value="">
-                <button class="btn btn-ghost" type="submit"><i class="bi bi-cpu"></i> Richiedi aggiornamento fittizio</button>
-            </form>
-        </article>
-    </div>
-</section>
-
-<section class="section container reveal">
     <h2><i class="bi bi-table"></i> Elenco utenti</h2>
     <div class="table-wrap card">
         <table>
@@ -495,11 +387,18 @@ require_once __DIR__ . '/includes/header.php';
                         <td><?= e((string) $item['created_at']) ?></td>
                         <td>
                             <?php if ((int) $item['id'] !== (int) (currentUser()['id'] ?? 0)): ?>
-                                <form method="post" onsubmit="return confirm('Eliminare questo utente?');">
-                                    <input type="hidden" name="action" value="delete_user">
-                                    <input type="hidden" name="delete_user_id" value="<?= e((string) $item['id']) ?>">
-                                    <button class="btn btn-danger" type="submit">Elimina</button>
-                                </form>
+                                <div class="table-actions">
+                                    <button class="btn btn-ghost btn-icon user-edit-btn" type="button" data-user-id="<?= e((string) $item['id']) ?>" aria-label="Modifica utente">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form method="post" onsubmit="return confirm('Eliminare questo utente?');">
+                                        <input type="hidden" name="action" value="delete_user">
+                                        <input type="hidden" name="delete_user_id" value="<?= e((string) $item['id']) ?>">
+                                        <button class="btn btn-danger btn-icon" type="submit" aria-label="Elimina utente">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             <?php else: ?>
                                 <span class="helper-text">Account attivo</span>
                             <?php endif; ?>
@@ -529,6 +428,7 @@ require_once __DIR__ . '/includes/header.php';
                     <th>Ossigeno (mg/L)</th>
                     <th>Microplastiche (%)</th>
                     <th>Ultimo aggiornamento</th>
+                    <th>Azione</th>
                 </tr>
             </thead>
             <tbody>
@@ -542,6 +442,11 @@ require_once __DIR__ . '/includes/header.php';
                         <td><?= e(number_format((float) ($buoy['dissolved_oxygen'] ?? 0), 1)) ?></td>
                         <td><?= e(number_format((float) ($buoy['microplastics_percent'] ?? 0), 1)) ?></td>
                         <td><?= e((string) $buoy['last_update']) ?></td>
+                        <td>
+                            <button class="btn btn-ghost btn-icon buoy-edit-btn" type="button" data-buoy-id="<?= e((string) $buoy['id']) ?>" aria-label="Modifica boa">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -562,6 +467,71 @@ require_once __DIR__ . '/includes/header.php';
         <canvas id="buoyChart" height="130"></canvas>
     </div>
 </section>
+
+<div id="userEditModal" class="admin-modal" aria-hidden="true">
+    <div class="admin-modal-content">
+        <div class="admin-modal-head">
+            <h3>Modifica utente</h3>
+            <button type="button" class="btn btn-ghost btn-icon" data-modal-close="userEditModal" aria-label="Chiudi">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <form method="post" id="userEditModalForm" class="form-card compact-form" onsubmit="return confirm('Salvare le modifiche utente?');">
+            <input type="hidden" name="action" value="update_user">
+            <input type="hidden" name="user_id" id="modalUserId">
+            <label>Nome completo
+                <input type="text" name="full_name" id="modalUserFullName" required>
+            </label>
+            <label>Username
+                <input type="text" name="username" id="modalUserUsername" required>
+            </label>
+            <label>Email
+                <input type="email" name="email" id="modalUserEmail" required>
+            </label>
+            <label>Ruolo
+                <select name="role" id="modalUserRole" required>
+                    <option value="compratore">Compratore</option>
+                    <option value="pescatore">Pescatore</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </label>
+            <button class="btn btn-primary" type="submit"><i class="bi bi-pencil-square"></i> Salva modifiche</button>
+        </form>
+    </div>
+</div>
+
+<div id="buoyEditModal" class="admin-modal" aria-hidden="true">
+    <div class="admin-modal-content">
+        <div class="admin-modal-head">
+            <h3>Modifica boa</h3>
+            <button type="button" class="btn btn-ghost btn-icon" data-modal-close="buoyEditModal" aria-label="Chiudi">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <form method="post" id="buoyEditModalForm" class="form-card compact-form" onsubmit="return confirm('Salvare le modifiche boa?');">
+            <input type="hidden" name="action" value="update_buoy">
+            <input type="hidden" name="buoy_id" id="modalBuoyId">
+            <label>Nome boa
+                <input type="text" name="name" id="modalBuoyName" required>
+            </label>
+            <label>Zona
+                <input type="text" name="zone" id="modalBuoyZone" required>
+            </label>
+            <div class="split">
+                <label>Latitudine
+                    <input type="number" name="lat" id="modalBuoyLat" step="0.0001" required>
+                </label>
+                <label>Longitudine
+                    <input type="number" name="lng" id="modalBuoyLng" step="0.0001" required>
+                </label>
+            </div>
+            <label>Stato
+                <input type="text" name="status" id="modalBuoyStatus" required>
+            </label>
+            <button class="btn btn-primary" type="submit"><i class="bi bi-geo-alt"></i> Salva modifiche</button>
+        </form>
+    </div>
+</div>
 
 <link
     rel="stylesheet"

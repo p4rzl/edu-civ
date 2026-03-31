@@ -85,6 +85,12 @@ if ($code !== '') {
     $product = $stmt->fetch();
 }
 
+$isCertified = false;
+if ($product) {
+    $labelValue = (string) ($product['quality_label'] ?? '');
+    $isCertified = stripos($labelValue, 'lanz') !== false || stripos($labelValue, 'certific') !== false;
+}
+
 $reviews = [];
 if ($product) {
     $reviewsStmt = $pdo->prepare(
@@ -97,6 +103,18 @@ if ($product) {
     $reviewsStmt->bindValue(':product_id', (int) $product['id'], PDO::PARAM_INT);
     $reviewsStmt->execute();
     $reviews = $reviewsStmt->fetchAll();
+
+    if ($currentUserRole === 'compratore' && $currentUserId > 0) {
+        $scanStmt = $pdo->prepare(
+            'INSERT INTO product_scans (product_id, buyer_id, scanned_at)
+             VALUES (:product_id, :buyer_id, :scanned_at)'
+        );
+        $scanStmt->execute([
+            'product_id' => (int) $product['id'],
+            'buyer_id' => $currentUserId,
+            'scanned_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
 }
 
 $pageTitle = 'Scheda Prodotto - Lanz';
@@ -105,6 +123,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <section class="section container reveal">
+    <a class="btn btn-ghost btn-back" href="buyer.php"><i class="bi bi-arrow-left"></i> Torna alla ricerca</a>
     <h1>Tracciabilita prodotto</h1>
 
     <?php if ($code === ''): ?>
@@ -113,8 +132,24 @@ require_once __DIR__ . '/includes/header.php';
         <div class="alert alert-error">Nessun prodotto trovato per il codice <?= e($code) ?>.</div>
     <?php else: ?>
         <div class="card">
-            <h2><?= e((string) $product['fish_type']) ?> - Codice <?= e((string) $product['code']) ?></h2>
+            <div class="product-header">
+                <div>
+                    <h2><?= e((string) $product['fish_type']) ?> - Codice <?= e((string) $product['code']) ?></h2>
+                    <p class="helper-text">Locale di vendita: <?= e((string) ($product['business_location'] ?? 'N/D')) ?></p>
+                </div>
+                <div class="fisherman-badge">
+                    <span class="fisherman-name">
+                        <?= e((string) ($product['fisherman_name'] ?? 'N/D')) ?>
+                        <?php if ($isCertified): ?>
+                            <span class="cert-icon-inline" aria-label="Certificato Lanz"><i class="bi bi-patch-check-fill"></i></span>
+                        <?php endif; ?>
+                    </span>
+                    <span class="fisherman-meta"><?= e((string) ($product['business_location'] ?? 'Attivita locale')) ?></span>
+                    <span class="fisherman-meta"><?= $isCertified ? 'Pescatore certificato Lanz' : 'Pescatore verificato' ?></span>
+                </div>
+            </div>
             <div class="metrics-grid">
+                <p><strong>Locale di vendita:</strong> <?= e((string) ($product['business_location'] ?? 'N/D')) ?></p>
                 <p><strong>Zona di pesca:</strong> <?= e((string) $product['catch_area']) ?></p>
                 <p><strong>Data di pesca:</strong> <?= e((string) $product['catch_date']) ?></p>
                 <p><strong>Pescatore:</strong> <?= e((string) ($product['fisherman_name'] ?? 'N/D')) ?></p>
@@ -129,26 +164,41 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <?php if ($currentUserRole === 'compratore'): ?>
-            <div class="card review-card">
-                <h3>Lascia una recensione al pescatore</h3>
-                <form method="post" class="form-card compact-form">
-                    <input type="hidden" name="action" value="add_review">
-                    <input type="hidden" name="code" value="<?= e((string) $product['code']) ?>">
-                    <label>Voto
-                        <select name="rating" required>
-                            <option value="">Seleziona</option>
-                            <option value="5">5 - Eccellente</option>
-                            <option value="4">4 - Ottimo</option>
-                            <option value="3">3 - Buono</option>
-                            <option value="2">2 - Sufficiente</option>
-                            <option value="1">1 - Scarso</option>
-                        </select>
-                    </label>
-                    <label>Commento
-                        <input type="text" name="comment" maxlength="255" required>
-                    </label>
-                    <button class="btn btn-primary" type="submit">Invia recensione</button>
-                </form>
+            <div class="review-layout">
+                <div class="card review-card">
+                    <h3>Lascia una recensione al pescatore</h3>
+                    <form method="post" class="form-card compact-form">
+                        <input type="hidden" name="action" value="add_review">
+                        <input type="hidden" name="code" value="<?= e((string) $product['code']) ?>">
+                        <label>Valutazione
+                            <div class="star-rating" role="radiogroup" aria-label="Valutazione">
+                                <input type="radio" id="rating-5" name="rating" value="5" required>
+                                <label for="rating-5" title="5 stelle">★</label>
+                                <input type="radio" id="rating-4" name="rating" value="4">
+                                <label for="rating-4" title="4 stelle">★</label>
+                                <input type="radio" id="rating-3" name="rating" value="3">
+                                <label for="rating-3" title="3 stelle">★</label>
+                                <input type="radio" id="rating-2" name="rating" value="2">
+                                <label for="rating-2" title="2 stelle">★</label>
+                                <input type="radio" id="rating-1" name="rating" value="1">
+                                <label for="rating-1" title="1 stella">★</label>
+                            </div>
+                        </label>
+                        <label>Commento
+                            <input type="text" name="comment" maxlength="255" required>
+                        </label>
+                        <button class="btn btn-primary" type="submit">Invia recensione</button>
+                    </form>
+                </div>
+                <aside class="card product-mini">
+                    <h4>Dati principali</h4>
+                    <ul>
+                        <li><strong>Qualita:</strong> <?= e((string) $product['quality_label']) ?></li>
+                        <li><strong>Ossigeno:</strong> <?= e((string) $product['dissolved_oxygen']) ?> mg/L</li>
+                        <li><strong>Microplastiche:</strong> <?= e((string) $product['microplastics_percent']) ?>%</li>
+                        <li><strong>Salinita:</strong> <?= e((string) $product['salinity']) ?> PSU</li>
+                    </ul>
+                </aside>
             </div>
         <?php endif; ?>
 
@@ -172,7 +222,6 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     <?php endif; ?>
 
-    <a class="btn btn-ghost" href="buyer.php">Torna alla ricerca</a>
 </section>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

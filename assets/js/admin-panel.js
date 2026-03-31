@@ -3,68 +3,93 @@ document.addEventListener('DOMContentLoaded', () => {
     const buoys = Array.isArray(window.BUOYS_DATA) ? window.BUOYS_DATA : [];
     const readings = Array.isArray(window.BUOY_READINGS) ? window.BUOY_READINGS : [];
 
-    const userSelect = document.getElementById('userSelect');
-    const userFullName = document.getElementById('userFullName');
-    const userUsername = document.getElementById('userUsername');
-    const userEmail = document.getElementById('userEmail');
-    const userRole = document.getElementById('userRole');
+    const userModal = document.getElementById('userEditModal');
+    const userModalForm = document.getElementById('userEditModalForm');
+    const modalUserId = document.getElementById('modalUserId');
+    const modalUserFullName = document.getElementById('modalUserFullName');
+    const modalUserUsername = document.getElementById('modalUserUsername');
+    const modalUserEmail = document.getElementById('modalUserEmail');
+    const modalUserRole = document.getElementById('modalUserRole');
 
-    const buoySelect = document.getElementById('buoySelect');
-    const buoyName = document.getElementById('buoyName');
-    const buoyZone = document.getElementById('buoyZone');
-    const buoyLat = document.getElementById('buoyLat');
-    const buoyLng = document.getElementById('buoyLng');
-    const buoyStatus = document.getElementById('buoyStatus');
-    const simulateBuoyId = document.getElementById('simulateBuoyId');
+    const buoyModal = document.getElementById('buoyEditModal');
+    const buoyModalForm = document.getElementById('buoyEditModalForm');
+    const modalBuoyId = document.getElementById('modalBuoyId');
+    const modalBuoyName = document.getElementById('modalBuoyName');
+    const modalBuoyZone = document.getElementById('modalBuoyZone');
+    const modalBuoyLat = document.getElementById('modalBuoyLat');
+    const modalBuoyLng = document.getElementById('modalBuoyLng');
+    const modalBuoyStatus = document.getElementById('modalBuoyStatus');
 
     const chartSelect = document.getElementById('chartBuoySelect');
     const chartCanvas = document.getElementById('buoyChart');
 
-    const hydrateUserForm = () => {
-        if (!userSelect) {
+    const openModal = (modal) => {
+        if (!modal) {
             return;
         }
-
-        const selectedId = Number(userSelect.value);
-        const current = users.find((item) => Number(item.id) === selectedId);
-        if (!current) {
-            return;
-        }
-
-        if (userFullName) userFullName.value = current.full_name || '';
-        if (userUsername) userUsername.value = current.username || '';
-        if (userEmail) userEmail.value = current.email || '';
-        if (userRole) userRole.value = current.role || 'compratore';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
     };
 
-    const hydrateBuoyForm = () => {
-        if (!buoySelect) {
+    const closeModal = (modal) => {
+        if (!modal) {
             return;
         }
-
-        const selectedId = Number(buoySelect.value);
-        const current = buoys.find((item) => Number(item.id) === selectedId);
-        if (!current) {
-            return;
-        }
-
-        if (buoyName) buoyName.value = current.name || '';
-        if (buoyZone) buoyZone.value = current.zone || '';
-        if (buoyLat) buoyLat.value = current.lat || '';
-        if (buoyLng) buoyLng.value = current.lng || '';
-        if (buoyStatus) buoyStatus.value = current.status || '';
-        if (simulateBuoyId) simulateBuoyId.value = String(selectedId);
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
     };
 
-    if (userSelect) {
-        hydrateUserForm();
-        userSelect.addEventListener('change', hydrateUserForm);
-    }
+    document.querySelectorAll('.user-edit-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            const id = Number(button.getAttribute('data-user-id'));
+            const current = users.find((item) => Number(item.id) === id);
+            if (!current || !userModalForm) {
+                return;
+            }
+            if (modalUserId) modalUserId.value = String(current.id || '');
+            if (modalUserFullName) modalUserFullName.value = current.full_name || '';
+            if (modalUserUsername) modalUserUsername.value = current.username || '';
+            if (modalUserEmail) modalUserEmail.value = current.email || '';
+            if (modalUserRole) modalUserRole.value = current.role || 'compratore';
+            openModal(userModal);
+        });
+    });
 
-    if (buoySelect) {
-        hydrateBuoyForm();
-        buoySelect.addEventListener('change', hydrateBuoyForm);
-    }
+    document.querySelectorAll('.buoy-edit-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            const id = Number(button.getAttribute('data-buoy-id'));
+            const current = buoys.find((item) => Number(item.id) === id);
+            if (!current || !buoyModalForm) {
+                return;
+            }
+            if (modalBuoyId) modalBuoyId.value = String(current.id || '');
+            if (modalBuoyName) modalBuoyName.value = current.name || '';
+            if (modalBuoyZone) modalBuoyZone.value = current.zone || '';
+            if (modalBuoyLat) modalBuoyLat.value = current.lat || '';
+            if (modalBuoyLng) modalBuoyLng.value = current.lng || '';
+            if (modalBuoyStatus) modalBuoyStatus.value = current.status || '';
+            openModal(buoyModal);
+        });
+    });
+
+    document.querySelectorAll('[data-modal-close]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-modal-close');
+            const targetModal = targetId ? document.getElementById(targetId) : null;
+            closeModal(targetModal);
+        });
+    });
+
+    [userModal, buoyModal].forEach((modal) => {
+        if (!modal) {
+            return;
+        }
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal(modal);
+            }
+        });
+    });
 
     if (!chartCanvas || typeof Chart === 'undefined') {
         return;

@@ -31,6 +31,14 @@ if (notifyToggle && notifyMenu) {
     });
 }
 
+const alerts = document.querySelectorAll('.alert');
+alerts.forEach((alert) => {
+    setTimeout(() => {
+        alert.classList.add('alert-hide');
+        setTimeout(() => alert.remove(), 450);
+    }, 3800);
+});
+
 const observer = new IntersectionObserver(
     (entries) => {
         entries.forEach((entry) => {

@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.setAttribute('aria-hidden', 'true');
     };
 
-    document.querySelectorAll('.qr-enlarge').forEach((button) => {
+    document.querySelectorAll('.qr-zoom').forEach((button) => {
         button.addEventListener('click', () => {
             const text = button.getAttribute('data-qr-text');
             if (text) {

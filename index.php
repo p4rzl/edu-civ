@@ -25,44 +25,18 @@ require_once __DIR__ . '/includes/header.php';
             <a class="btn btn-primary" href="register.php">Partecipa al progetto</a>
         </div>
     </div>
-    <div class="hero-card floating-card telemetry-panel">
-        <div class="telemetry-head">
-            <h3>Telemetria in diretta</h3>
-            <span class="status-pill"><i class="bi bi-broadcast-pin"></i> 4 boe online</span>
+    <div class="collaboration-badge">
+        <div class="collab-logo lanz-logo">
+            <img src="assets/svg/icon.svg" alt="Logo Lanz">
+            <span>Lanz</span>
         </div>
-        <div class="telemetry-metrics" aria-label="Indicatori telemetrici principali">
-            <article class="metric-item">
-                <p>Microplastiche</p>
-                <strong>0.8%</strong>
-                <span class="metric-bar"><span style="width: 26%"></span></span>
-            </article>
-            <article class="metric-item">
-                <p>Ossigeno disciolto</p>
-                <strong>7.4 mg/L</strong>
-                <span class="metric-bar"><span style="width: 74%"></span></span>
-            </article>
-            <article class="metric-item">
-                <p>Salinita</p>
-                <strong>37.9 PSU</strong>
-                <span class="metric-bar"><span style="width: 63%"></span></span>
-            </article>
-            <article class="metric-item">
-                <p>Trasmissione</p>
-                <strong>5G + LoRaWAN</strong>
-                <span class="metric-bar"><span style="width: 92%"></span></span>
-            </article>
+        <div class="collab-divider"></div>
+        <div class="collab-logo bari-logo">
+            <img src="assets/svg/Bari-Stemma.svg" alt="Stemma Comune di Bari">
+            <span>Bari</span>
         </div>
-        <p class="telemetry-note">Aggiornamento continuo dalla rete boe sul litorale barese.</p>
     </div>
 </section>
-
-<div class="container reveal skyline-decor" aria-hidden="true">
-    <div class="skyline-track">
-        <img src="assets/svg/harbor-illustration.svg" alt="" class="skyline-item skyline-left tint-brand-b">
-        <img src="assets/svg/sea-line.svg" alt="" class="skyline-item skyline-center tint-brand-a">
-        <img src="assets/svg/fish-emblem.svg" alt="" class="skyline-item skyline-right tint-brand-c">
-    </div>
-</div>
 
 <section class="section container reveal home-overview no-card-overview">
     <div class="section-head">
@@ -117,51 +91,38 @@ require_once __DIR__ . '/includes/header.php';
 <section class="section container reveal certification-showcase">
     <div class="cert-copy">
         <p class="eyebrow">Certificazione Lanz</p>
-        <h2>Rendi ogni banco vendita piu credibile con un QR che racconta dati reali</h2>
+        <h2>Qualità certificata dal mare al banco vendita</h2>
         <p>
-            Espone la tua etichetta con QR code e mostra ai clienti area di pesca, qualita dell'acqua,
-            controlli effettuati e storico ambientale del lotto.
+            Ogni lotto di pescato arriva con garanzia digitale tracciabile. 
+            I tuoi clienti vedono l'origine, la qualità dell'acqua e tutta la filiera verificata.
         </p>
         <ul class="cert-list">
-            <li><i class="bi bi-check2-circle"></i> Tracciabilita certificata per ogni lotto</li>
-            <li><i class="bi bi-check2-circle"></i> Fiducia immediata per compratori e cittadini</li>
-            <li><i class="bi bi-check2-circle"></i> Storico verificabile e conforme agli standard locali</li>
+            <li><i class="bi bi-check2-circle"></i> Tracciabilità certificata</li>
+            <li><i class="bi bi-check2-circle"></i> Fiducia immediata agli acquirenti</li>
+            <li><i class="bi bi-check2-circle"></i> Qualità verificabile online</li>
         </ul>
         <a class="btn btn-primary" href="register.php">Diventa partner</a>
     </div>
     <div class="cert-visual" aria-label="Anteprima certificazione digitale">
-        <div class="qr-preview">
-            <div class="qr-grid" aria-hidden="true">
-                <span></span><span></span><span></span><span></span>
-                <span></span><span></span><span></span><span></span>
-                <span></span><span></span><span></span><span></span>
-                <span></span><span></span><span></span><span></span>
+        <div class="cert-badge">
+            <div class="cert-badge-stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
             </div>
-            <h3>Certificato QR #BARI-0241</h3>
-            <p>Origine: Molo San Nicola</p>
-            <p>Qualita acqua: conforme</p>
-            <p>Ultimo controllo: 14 min fa</p>
+            <div class="cert-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h3>Verificato</h3>
+            <div class="badge-details">
+                <p><strong>Molo San Nicola</strong></p>
+                <p>Qualità garantita</p>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="section container reveal">
-    <h2 class="section-title-center">Dati marini in tempo reale</h2>
-    <div class="charts-grid">
-        <div class="card chart-card">
-            <h3>Qualita dell'acqua (ultimi 7 giorni)</h3>
-            <canvas id="qualityChart"></canvas>
-        </div>
-        <div class="card chart-card">
-            <h3>Microplastiche rilevate</h3>
-            <canvas id="microplasticsChart"></canvas>
-        </div>
-        <div class="card chart-card">
-            <h3>Status boe monitoraggio</h3>
-            <canvas id="buoyStatusChart"></canvas>
-        </div>
-    </div>
-</section>
+
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
 

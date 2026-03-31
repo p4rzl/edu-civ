@@ -64,13 +64,7 @@ if ($user && isset($pdo)) {
                 <li><a href="index.php"><i class="bi bi-house-door"></i> Home</a></li>
                 <?php if ($user): ?>
                     <?php if ($user['role'] !== 'admin'): ?>
-                        <li><a href="dashboard.php"><i class="bi bi-grid"></i> Dashboard</a></li>
-                    <?php endif; ?>
-                    <?php if ($user['role'] === 'compratore'): ?>
-                        <li><a href="buyer.php"><i class="bi bi-upc-scan"></i> Tracciabilita</a></li>
-                    <?php endif; ?>
-                    <?php if ($user['role'] === 'pescatore'): ?>
-                        <li><a href="fisherman.php"><i class="bi bi-basket2"></i> Area Pescatore</a></li>
+                        <li><a href="dashboard.php"><i class="bi bi-grid"></i> Pannello personale</a></li>
                     <?php endif; ?>
                     <?php if ($user['role'] === 'admin'): ?>
                         <li><a href="admin.php" class="btn-nav"><i class="bi bi-shield-lock"></i> Controllo Admin</a></li>
