@@ -24,6 +24,17 @@ const settingsModal = document.getElementById('userSettingsModal');
 const openAddProductModal = document.getElementById('openAddProductModal');
 const addProductModal = document.getElementById('addProductModal');
 const themeToggleHeader = document.getElementById('themeToggleHeader');
+const buyerManualToggle = document.getElementById('buyerManualToggle');
+const buyerManualPanel = document.getElementById('buyerManualPanel');
+
+const openSettingsModal = () => {
+    if (!settingsModal || !settingsToggle) {
+        return;
+    }
+    settingsModal.classList.add('open');
+    settingsModal.setAttribute('aria-hidden', 'false');
+    settingsToggle.setAttribute('aria-expanded', 'true');
+};
 
 if (notifyToggle && notifyMenu) {
     notifyToggle.addEventListener('click', () => {
@@ -75,18 +86,38 @@ if (userMenuToggle && userMenu) {
 if (settingsToggle) {
     settingsToggle.addEventListener('click', () => {
         if (settingsModal) {
-            settingsModal.classList.add('open');
-            settingsModal.setAttribute('aria-hidden', 'false');
-            settingsToggle.setAttribute('aria-expanded', 'true');
+            openSettingsModal();
             return;
         }
+
+        const nextUrl = new URL('dashboard.php', window.location.href);
+        nextUrl.searchParams.set('open', 'settings');
+        window.location.href = nextUrl.toString();
     });
+}
+
+if (settingsModal) {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('open') === 'settings') {
+        openSettingsModal();
+        url.searchParams.delete('open');
+        window.history.replaceState({}, '', url.toString());
+    }
 }
 
 if (openAddProductModal && addProductModal) {
     openAddProductModal.addEventListener('click', () => {
         addProductModal.classList.add('open');
         addProductModal.setAttribute('aria-hidden', 'false');
+    });
+}
+
+if (buyerManualToggle && buyerManualPanel) {
+    buyerManualToggle.addEventListener('click', () => {
+        const isHidden = buyerManualPanel.hasAttribute('hidden');
+        buyerManualPanel.toggleAttribute('hidden');
+        buyerManualToggle.setAttribute('aria-expanded', String(isHidden));
+        buyerManualToggle.classList.toggle('is-active', isHidden);
     });
 }
 

@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const startButton = document.getElementById('startScan');
+    const startButtons = document.querySelectorAll('[data-scan-open]');
     const codeInput = document.getElementById('productCode');
     const qrReaderElement = document.getElementById('qr-reader');
     const scanModal = document.getElementById('scanModal');
 
-    if (!startButton || !codeInput || !qrReaderElement || !scanModal || typeof Html5Qrcode === 'undefined') {
+    if (!startButtons.length || !codeInput || !qrReaderElement || !scanModal || typeof Html5Qrcode === 'undefined') {
         return;
     }
 
@@ -40,14 +40,22 @@ document.addEventListener('DOMContentLoaded', () => {
         scanning = true;
     };
 
-    startButton.addEventListener('click', async () => {
+    const openScanner = async () => {
         try {
             scanModal.classList.add('open');
             scanModal.setAttribute('aria-hidden', 'false');
             await startScan();
         } catch (error) {
-            startButton.textContent = 'Camera non disponibile';
+            startButtons.forEach((button) => {
+                if (button instanceof HTMLButtonElement) {
+                    button.disabled = true;
+                }
+            });
         }
+    };
+
+    startButtons.forEach((button) => {
+        button.addEventListener('click', openScanner);
     });
 
     scanModal.addEventListener('modal:closed', () => {

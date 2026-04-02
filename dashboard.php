@@ -339,7 +339,47 @@ require_once __DIR__ . '/includes/header.php';
 
 <?php if ($userRole === 'compratore'): ?>
     <section class="section container reveal">
-        <h2>Panoramica acquisti</h2>
+        <div class="buyer-scan-hero card">
+            <div class="buyer-scan-copy">
+                <p class="eyebrow">Funzione principale</p>
+                <h2>Scansiona il QR del prodotto in pochi secondi</h2>
+                <p class="lead">È il modo piu rapido per verificare l'origine del pescato. Usa la fotocamera oppure inserisci il codice manualmente se preferisci.</p>
+                <div class="buyer-scan-actions">
+                    <button class="btn btn-primary btn-cta-scan" type="button" data-scan-open>
+                        <i class="bi bi-camera"></i>
+                        <span>Scansiona ora</span>
+                    </button>
+                    <button class="btn btn-ghost btn-icon-label" type="button" id="buyerManualToggle" aria-expanded="false" aria-controls="buyerManualPanel">
+                        <i class="bi bi-keyboard"></i>
+                        <span>Codice</span>
+                    </button>
+                </div>
+                <div class="buyer-scan-hints">
+                    <span><i class="bi bi-lightning-charge"></i> Accesso immediato</span>
+                    <span><i class="bi bi-shield-check"></i> Verifica affidabile</span>
+                    <span><i class="bi bi-phone"></i> Anche da smartphone</span>
+                </div>
+                <div id="buyerManualPanel" class="buyer-manual-panel" hidden>
+                    <form class="buyer-manual-form" action="product.php" method="get">
+                        <input type="text" id="productCode" name="code" placeholder="Es. LZ-2026-0001" aria-label="Codice prodotto" required>
+                        <button type="submit" class="btn btn-primary btn-manual-submit" aria-label="Cerca prodotto">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="buyer-scan-visual" aria-hidden="true">
+                <div class="buyer-scan-ring">
+                    <i class="bi bi-qr-code-scan"></i>
+                </div>
+                <p>Inquadra il QR e lascia che il sistema faccia il resto.</p>
+            </div>
+        </div>
+
+        <div class="buyer-stats-head">
+            <h2>Panoramica acquisti</h2>
+            <p class="helper-text">Dati recenti della tua attività di verifica.</p>
+        </div>
         <div class="stats-grid compact-stats-grid">
             <article class="stat-card">
                 <span class="stat-label">QR scansionati</span>
@@ -357,21 +397,6 @@ require_once __DIR__ . '/includes/header.php';
                 <span class="stat-meta">Piu acquistato</span>
             </article>
         </div>
-    </section>
-
-    <section class="section container reveal">
-        <h2>Verifica prodotto</h2>
-        <form class="form-card action-card scan-card compact-scan-card" action="product.php" method="get">
-            <label>Codice prodotto
-                <div class="scan-input">
-                    <input type="text" id="productCode" name="code" placeholder="Es. LZ-2026-0001" required>
-                    <button id="startScan" class="scan-btn" type="button" aria-label="Avvia scansione">
-                        <i class="bi bi-camera"></i>
-                    </button>
-                </div>
-            </label>
-            <button type="submit" class="btn btn-primary">Cerca prodotto</button>
-        </form>
 
         <div id="scanModal" class="admin-modal" aria-hidden="true">
             <div class="admin-modal-content scan-modal-content">

@@ -56,10 +56,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($deleteUserId === $selfId) {
             setFlash('error', 'Non puoi eliminare il tuo account amministratore attivo.');
         } else {
-            $stmt = $pdo->prepare('DELETE FROM users WHERE id = :id');
-            $stmt->bindValue(':id', $deleteUserId, PDO::PARAM_INT);
-            $stmt->execute();
-            setFlash('success', 'Utente eliminato con successo.');
+            try {
+                $pdo->beginTransaction();
+
+                $cleanupStatements = [
+                    'DELETE FROM reviews WHERE buyer_id = :id OR fisherman_id = :id',
+                    'DELETE FROM product_scans WHERE buyer_id = :id',
+                    'DELETE FROM notifications WHERE target_user_id = :id',
+                    'DELETE FROM products WHERE fisherman_id = :id',
+                    'DELETE FROM product_requests WHERE fisherman_id = :id OR approved_by = :id',
+                    'DELETE FROM users WHERE id = :id',
+                ];
+
+                foreach ($cleanupStatements as $sql) {
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindValue(':id', $deleteUserId, PDO::PARAM_INT);
+                    $stmt->execute();
+                }
+
+                $pdo->commit();
+                setFlash('success', 'Utente eliminato con successo.');
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                setFlash('error', 'Impossibile eliminare l\'utente: esistono ancora vincoli collegati.');
+            }
         }
     }
 
