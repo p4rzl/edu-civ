@@ -49,6 +49,7 @@ if ($user && isset($pdo)) {
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="icon" href="/assets/png/icon.png" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
 </head>
 <body class="<?= e($bodyClass) ?>">
@@ -59,12 +60,11 @@ if ($user && isset($pdo)) {
                 <img src="assets/svg/icon.svg" alt="Logo Lanz" class="logo-mark">
                 <span>Lanz</span>
             </a>
-            <button class="menu-toggle" aria-label="Apri menu" id="menuToggle">Menu</button>
-            <ul class="nav-links" id="navLinks">
-                <?php if (!$user): ?>
-                    <li><a class="btn-nav" href="login.php"><i class="bi bi-person-circle"></i> Accedi / Registrati</a></li>
-                <?php endif; ?>
-            </ul>
+            <button class="menu-toggle" aria-label="Apri menu" id="menuToggle" aria-controls="navLinks" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
             <?php if ($user): ?>
                 <div class="header-tools" id="headerTools">
                 <div class="notify-wrap">
@@ -106,14 +106,21 @@ if ($user && isset($pdo)) {
                         </ul>
                     </div>
                 </div>
-                <button id="settingsToggle" class="notify-btn settings-btn" type="button" aria-label="Apri impostazioni" aria-expanded="false">
-                    <i class="bi bi-gear"></i>
-                </button>
+                <?php if (($user['role'] ?? '') !== 'admin'): ?>
+                    <button id="settingsToggle" class="notify-btn settings-btn" type="button" aria-label="Apri impostazioni" aria-expanded="false">
+                        <i class="bi bi-gear"></i>
+                    </button>
+                <?php endif; ?>
                 <button id="themeToggleHeader" class="notify-btn theme-header-btn" type="button" aria-label="Cambia tema" aria-pressed="false">
                     <i class="bi bi-sun"></i>
                 </button>
                 </div>
             <?php endif; ?>
+            <ul class="nav-links" id="navLinks">
+                <?php if (!$user): ?>
+                    <li><a class="btn-nav" href="login.php"><i class="bi bi-person-circle"></i> Accedi / Registrati</a></li>
+                <?php endif; ?>
+            </ul>
         </nav>
     </header>
 

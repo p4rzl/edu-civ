@@ -4,11 +4,13 @@ const headerTools = document.getElementById('headerTools');
 
 if (menuToggle) {
     menuToggle.addEventListener('click', () => {
+        const isOpen = menuToggle.classList.toggle('is-open');
+        menuToggle.setAttribute('aria-expanded', String(isOpen));
         if (navLinks) {
-            navLinks.classList.toggle('open');
+            navLinks.classList.toggle('open', isOpen);
         }
         if (headerTools) {
-            headerTools.classList.toggle('open');
+            headerTools.classList.toggle('open', isOpen);
         }
     });
 }
@@ -78,8 +80,6 @@ if (settingsToggle) {
             settingsToggle.setAttribute('aria-expanded', 'true');
             return;
         }
-
-        window.location.href = 'dashboard.php';
     });
 }
 
@@ -114,6 +114,33 @@ document.querySelectorAll('[data-modal-close]').forEach((button) => {
 
 const settingsTabs = document.querySelectorAll('[data-settings-tab]');
 const settingsPanes = document.querySelectorAll('[data-settings-pane]');
+const settingsPanesContainer = document.getElementById('settingsPanes');
+
+const syncSettingsPaneHeight = () => {
+    if (!settingsPanesContainer || settingsPanes.length === 0) {
+        return;
+    }
+
+    let maxHeight = 0;
+    settingsPanes.forEach((pane) => {
+        pane.classList.add('is-measuring');
+        pane.style.visibility = 'hidden';
+        pane.style.position = 'absolute';
+        pane.style.inset = '0';
+        pane.style.display = 'block';
+        maxHeight = Math.max(maxHeight, pane.scrollHeight);
+        pane.classList.remove('is-measuring');
+        pane.style.removeProperty('visibility');
+        pane.style.removeProperty('position');
+        pane.style.removeProperty('inset');
+        pane.style.removeProperty('display');
+    });
+
+    settingsPanesContainer.style.minHeight = `${Math.max(maxHeight, 320)}px`;
+};
+
+syncSettingsPaneHeight();
+window.addEventListener('resize', syncSettingsPaneHeight);
 
 settingsTabs.forEach((tab) => {
     tab.addEventListener('click', () => {
@@ -127,6 +154,7 @@ settingsTabs.forEach((tab) => {
             pane.classList.toggle('is-active', pane.getAttribute('data-settings-pane') === target);
         });
         tab.classList.add('is-active');
+        syncSettingsPaneHeight();
     });
 });
 

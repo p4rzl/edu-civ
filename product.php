@@ -135,7 +135,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="product-header">
                 <div>
                     <h2><?= e((string) $product['fish_type']) ?> - Codice <?= e((string) $product['code']) ?></h2>
-                    <p class="helper-text">Locale di vendita: <?= e((string) ($product['business_location'] ?? 'N/D')) ?></p>
+                    <p class="helper-text">Tracciamento certificato del lotto con dati ambientali e origine del pescato.</p>
                 </div>
                 <div class="fisherman-badge">
                     <span class="fisherman-name">
@@ -152,7 +152,6 @@ require_once __DIR__ . '/includes/header.php';
                 <p><strong>Locale di vendita:</strong> <?= e((string) ($product['business_location'] ?? 'N/D')) ?></p>
                 <p><strong>Zona di pesca:</strong> <?= e((string) $product['catch_area']) ?></p>
                 <p><strong>Data di pesca:</strong> <?= e((string) $product['catch_date']) ?></p>
-                <p><strong>Pescatore:</strong> <?= e((string) ($product['fisherman_name'] ?? 'N/D')) ?></p>
                 <p><strong>Qualita certificata:</strong> <?= e((string) $product['quality_label']) ?></p>
                 <p><strong>Microplastiche:</strong> <?= e((string) $product['microplastics_percent']) ?>%</p>
                 <p><strong>Ossigeno disciolto:</strong> <?= e((string) $product['dissolved_oxygen']) ?> mg/L</p>
@@ -191,12 +190,11 @@ require_once __DIR__ . '/includes/header.php';
                     </form>
                 </div>
                 <aside class="card product-mini">
-                    <h4>Dati principali</h4>
+                    <h4>Sintesi qualita</h4>
                     <ul>
-                        <li><strong>Qualita:</strong> <?= e((string) $product['quality_label']) ?></li>
-                        <li><strong>Ossigeno:</strong> <?= e((string) $product['dissolved_oxygen']) ?> mg/L</li>
-                        <li><strong>Microplastiche:</strong> <?= e((string) $product['microplastics_percent']) ?>%</li>
-                        <li><strong>Salinita:</strong> <?= e((string) $product['salinity']) ?> PSU</li>
+                        <li><strong>Certificazione:</strong> <?= $isCertified ? 'Conforme standard Lanz' : 'Verifica base disponibile' ?></li>
+                        <li><strong>Stato ecosistema:</strong> <?= ((float) $product['dissolved_oxygen'] >= 6.0 && (float) $product['microplastics_percent'] <= 1.0) ? 'Buono' : 'Da monitorare' ?></li>
+                        <li><strong>Indice trasparenza:</strong> Tracciabilita completa del lotto</li>
                     </ul>
                 </aside>
             </div>

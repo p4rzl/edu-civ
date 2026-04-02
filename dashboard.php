@@ -530,113 +530,115 @@ require_once __DIR__ . '/includes/header.php';
                 <button type="button" class="settings-tab" data-settings-tab="activity">Gestione attivita</button>
             </div>
 
-            <section class="settings-pane is-active" data-settings-pane="profile">
-                <div class="settings-grid">
-                    <form method="post" class="form-card compact-form">
-                        <input type="hidden" name="action" value="update_profile">
-                        <h4>Profilo account</h4>
-                        <div class="name-split">
-                            <label>Nome
-                                <input type="text" name="first_name" value="<?= e($userFirstName) ?>" required>
+            <div class="settings-panes" id="settingsPanes">
+                <section class="settings-pane is-active" data-settings-pane="profile">
+                    <div class="settings-grid">
+                        <form method="post" class="form-card compact-form">
+                            <input type="hidden" name="action" value="update_profile">
+                            <h4>Profilo account</h4>
+                            <div class="name-split">
+                                <label>Nome
+                                    <input type="text" name="first_name" value="<?= e($userFirstName) ?>" required>
+                                </label>
+                                <label>Cognome
+                                    <input type="text" name="last_name" value="<?= e($userLastName) ?>" required>
+                                </label>
+                            </div>
+                            <label>Email
+                                <input type="email" name="email" value="<?= e((string) ($user['email'] ?? '')) ?>" required>
                             </label>
-                            <label>Cognome
-                                <input type="text" name="last_name" value="<?= e($userLastName) ?>" required>
+                            <button class="btn btn-primary" type="submit">Salva profilo</button>
+                        </form>
+
+                        <form method="post" class="form-card compact-form">
+                            <input type="hidden" name="action" value="update_password">
+                            <h4>Sicurezza</h4>
+                            <label>Password attuale
+                                <input type="password" name="current_password" required>
                             </label>
-                        </div>
-                        <label>Email
-                            <input type="email" name="email" value="<?= e((string) ($user['email'] ?? '')) ?>" required>
-                        </label>
-                        <button class="btn btn-primary" type="submit">Salva profilo</button>
-                    </form>
+                            <label>Nuova password
+                                <input type="password" name="new_password" minlength="8" required>
+                            </label>
+                            <label>Conferma nuova password
+                                <input type="password" name="confirm_password" minlength="8" required>
+                            </label>
+                            <button class="btn btn-primary" type="submit">Aggiorna password</button>
+                        </form>
+                    </div>
+                </section>
 
-                    <form method="post" class="form-card compact-form">
-                        <input type="hidden" name="action" value="update_password">
-                        <h4>Sicurezza</h4>
-                        <label>Password attuale
-                            <input type="password" name="current_password" required>
-                        </label>
-                        <label>Nuova password
-                            <input type="password" name="new_password" minlength="8" required>
-                        </label>
-                        <label>Conferma nuova password
-                            <input type="password" name="confirm_password" minlength="8" required>
-                        </label>
-                        <button class="btn btn-primary" type="submit">Aggiorna password</button>
-                    </form>
-                </div>
-            </section>
-
-            <section class="settings-pane" data-settings-pane="activity">
-                <?php if ($userRole === 'compratore'): ?>
-                    <p class="helper-text">Cronologia commenti e recensioni con modifica o eliminazione.</p>
-                    <?php if (!$buyerActivities): ?>
-                        <p class="helper-text">Nessuna attivita disponibile.</p>
-                    <?php else: ?>
-                        <div class="activity-list">
-                            <?php foreach ($buyerActivities as $activity): ?>
-                                <div class="activity-card">
-                                    <strong><?= e((string) $activity['fish_type']) ?> (<?= e((string) $activity['code']) ?>)</strong>
-                                    <p class="small"><?= e((string) $activity['created_at']) ?></p>
-                                    <form method="post" class="compact-form">
-                                        <input type="hidden" name="action" value="update_buyer_review">
-                                        <input type="hidden" name="review_id" value="<?= e((string) $activity['id']) ?>">
-                                        <label>Valutazione
-                                            <select name="rating" required>
-                                                <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                    <option value="<?= $i ?>" <?= (int) $activity['rating'] === $i ? 'selected' : '' ?>><?= $i ?></option>
-                                                <?php endfor; ?>
-                                            </select>
-                                        </label>
-                                        <label>Commento
-                                            <input type="text" name="comment" maxlength="255" value="<?= e((string) $activity['comment']) ?>" required>
-                                        </label>
-                                        <div class="activity-actions">
-                                            <button class="btn btn-primary" type="submit">Salva</button>
-                                        </div>
-                                    </form>
-                                    <form method="post" onsubmit="return confirm('Eliminare questa recensione?');">
-                                        <input type="hidden" name="action" value="delete_buyer_review">
-                                        <input type="hidden" name="review_id" value="<?= e((string) $activity['id']) ?>">
-                                        <button class="btn btn-danger" type="submit">Elimina</button>
-                                    </form>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                <?php endif; ?>
-
-                <?php if ($userRole === 'pescatore'): ?>
-                    <p class="helper-text">Cronologia richieste di aggiunta prodotto.</p>
-                    <?php if (!$fisherHistory): ?>
-                        <p class="helper-text">Nessuna richiesta disponibile.</p>
-                    <?php else: ?>
-                        <div class="activity-list">
-                            <?php foreach ($fisherHistory as $history): ?>
-                                <div class="activity-card">
-                                    <div class="activity-head-row">
-                                        <strong><?= e((string) $history['fish_type']) ?> - <?= e((string) $history['business_location']) ?></strong>
-                                        <span class="status-led <?= $history['status'] === 'approved' ? 'is-green' : ($history['status'] === 'rejected' ? 'is-red' : 'is-amber') ?>"><?= e((string) ucfirst($history['status'])) ?></span>
-                                    </div>
-                                    <p class="small">Richiesta: <?= e((string) $history['requested_at']) ?></p>
-                                    <?php if (!empty($history['generated_code'])): ?>
-                                        <p class="small">Codice: <?= e((string) $history['generated_code']) ?></p>
-                                    <?php endif; ?>
-                                    <?php if (!empty($history['admin_note'])): ?>
-                                        <p class="small">Nota admin: <?= e((string) $history['admin_note']) ?></p>
-                                    <?php endif; ?>
-                                    <?php if ($history['status'] !== 'approved'): ?>
-                                        <form method="post" onsubmit="return confirm('Rimuovere questa richiesta?');">
-                                            <input type="hidden" name="action" value="delete_own_request">
-                                            <input type="hidden" name="request_id" value="<?= e((string) $history['id']) ?>">
-                                            <button class="btn btn-danger" type="submit">Rimuovi</button>
+                <section class="settings-pane" data-settings-pane="activity">
+                    <?php if ($userRole === 'compratore'): ?>
+                        <p class="helper-text">Cronologia commenti e recensioni con modifica o eliminazione.</p>
+                        <?php if (!$buyerActivities): ?>
+                            <p class="helper-text">Nessuna attivita disponibile.</p>
+                        <?php else: ?>
+                            <div class="activity-list">
+                                <?php foreach ($buyerActivities as $activity): ?>
+                                    <div class="activity-card">
+                                        <strong><?= e((string) $activity['fish_type']) ?> (<?= e((string) $activity['code']) ?>)</strong>
+                                        <p class="small"><?= e((string) $activity['created_at']) ?></p>
+                                        <form method="post" class="compact-form">
+                                            <input type="hidden" name="action" value="update_buyer_review">
+                                            <input type="hidden" name="review_id" value="<?= e((string) $activity['id']) ?>">
+                                            <label>Valutazione
+                                                <select name="rating" required>
+                                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                        <option value="<?= $i ?>" <?= (int) $activity['rating'] === $i ? 'selected' : '' ?>><?= $i ?></option>
+                                                    <?php endfor; ?>
+                                                </select>
+                                            </label>
+                                            <label>Commento
+                                                <input type="text" name="comment" maxlength="255" value="<?= e((string) $activity['comment']) ?>" required>
+                                            </label>
+                                            <div class="activity-actions">
+                                                <button class="btn btn-primary" type="submit">Salva</button>
+                                            </div>
                                         </form>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
+                                        <form method="post" onsubmit="return confirm('Eliminare questa recensione?');">
+                                            <input type="hidden" name="action" value="delete_buyer_review">
+                                            <input type="hidden" name="review_id" value="<?= e((string) $activity['id']) ?>">
+                                            <button class="btn btn-danger" type="submit">Elimina</button>
+                                        </form>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
-                <?php endif; ?>
-            </section>
+
+                    <?php if ($userRole === 'pescatore'): ?>
+                        <p class="helper-text">Cronologia richieste di aggiunta prodotto.</p>
+                        <?php if (!$fisherHistory): ?>
+                            <p class="helper-text">Nessuna richiesta disponibile.</p>
+                        <?php else: ?>
+                            <div class="activity-list">
+                                <?php foreach ($fisherHistory as $history): ?>
+                                    <div class="activity-card">
+                                        <div class="activity-head-row">
+                                            <strong><?= e((string) $history['fish_type']) ?> - <?= e((string) $history['business_location']) ?></strong>
+                                            <span class="status-led <?= $history['status'] === 'approved' ? 'is-green' : ($history['status'] === 'rejected' ? 'is-red' : 'is-amber') ?>"><?= e((string) ucfirst($history['status'])) ?></span>
+                                        </div>
+                                        <p class="small">Richiesta: <?= e((string) $history['requested_at']) ?></p>
+                                        <?php if (!empty($history['generated_code'])): ?>
+                                            <p class="small">Codice: <?= e((string) $history['generated_code']) ?></p>
+                                        <?php endif; ?>
+                                        <?php if (!empty($history['admin_note'])): ?>
+                                            <p class="small">Nota admin: <?= e((string) $history['admin_note']) ?></p>
+                                        <?php endif; ?>
+                                        <?php if ($history['status'] !== 'approved'): ?>
+                                            <form method="post" onsubmit="return confirm('Rimuovere questa richiesta?');">
+                                                <input type="hidden" name="action" value="delete_own_request">
+                                                <input type="hidden" name="request_id" value="<?= e((string) $history['id']) ?>">
+                                                <button class="btn btn-danger" type="submit">Rimuovi</button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </section>
+            </div>
         </div>
     </div>
 <?php endif; ?>

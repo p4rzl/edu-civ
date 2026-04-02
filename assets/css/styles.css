@@ -66,6 +66,7 @@ main {
     align-items: center;
     gap: 1.5rem;
     padding: 0.8rem 0;
+    position: relative;
 }
 
 .logo {
@@ -82,6 +83,8 @@ main {
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.75);
     box-shadow: 0 12px 28px rgba(3, 41, 67, 0.12);
+    position: relative;
+    z-index: 4;
 }
 
 .logo-mark {
@@ -99,7 +102,7 @@ main {
     padding: 0;
     align-items: center;
     justify-content: flex-start;
-    margin-left: 1.6rem;
+    margin-left: auto;
 }
 
 .nav-links:empty {
@@ -131,8 +134,8 @@ main {
 }
 
 .notify-btn {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 999px;
     border: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.9);
@@ -142,6 +145,13 @@ main {
     justify-content: center;
     cursor: pointer;
     position: relative;
+    transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+}
+
+.notify-btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(0, 129, 198, 0.42);
+    background: rgba(255, 255, 255, 1);
 }
 
 .notify-dot {
@@ -217,6 +227,26 @@ main {
 
 .menu-toggle {
     display: none;
+}
+
+.hamburger-line {
+    width: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.menu-toggle.is-open .hamburger-line:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.menu-toggle.is-open .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.is-open .hamburger-line:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
 }
 
 
@@ -1093,12 +1123,12 @@ th {
 .admin-modal {
     position: fixed;
     inset: 0;
-    background: rgba(5, 22, 36, 0.42);
-    backdrop-filter: blur(8px);
+    background: transparent;
+    backdrop-filter: none;
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 80;
+    z-index: 9998;
     padding: 1rem;
 }
 
@@ -1178,11 +1208,11 @@ th {
 .qr-modal {
     position: fixed;
     inset: 0;
-    background: rgba(2, 19, 31, 0.68);
+    background: transparent;
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 60;
+    z-index: 9999;
     padding: 1rem;
 }
 
@@ -1841,7 +1871,7 @@ th {
 
 .reveal.show {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
 }
 
 .admin-page .wave-footer {
@@ -1943,16 +1973,24 @@ th {
 
     .menu-toggle {
         display: inline-flex;
+        width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 4px;
         border: 1px solid var(--line);
         background: #fff;
-        border-radius: 0.6rem;
-        padding: 0.45rem 0.7rem;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 0;
+        margin-left: 0.25rem;
     }
 
     .nav-links {
         position: absolute;
-        right: 4vw;
-        top: 64px;
+        left: 0;
+        top: calc(100% + 8px);
         width: min(290px, 88vw);
         background: #ffffff;
         border: 1px solid var(--line);
@@ -1963,6 +2001,7 @@ th {
         padding: 1rem;
         box-shadow: 0 22px 40px rgba(3, 41, 67, 0.13);
         margin-left: 0;
+        z-index: 45;
     }
 
     .nav-links.open {
@@ -1989,7 +2028,7 @@ th {
 
 /* Animazioni scroll conservativo */
 .reveal {
-    animation: fadeInUp 0.7s ease-out forwards;
+    animation: none;
 }
 
 @keyframes fadeInUp {
@@ -2096,11 +2135,13 @@ th {
 
 /* ===== OVERRIDE UI 2026 ===== */
 .header-tools {
-    margin-left: auto;
+    margin-left: -0.4rem;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     transition: transform 0.45s cubic-bezier(0.2, 0.85, 0.25, 1.1), opacity 0.28s ease;
+    position: relative;
+    z-index: 2;
 }
 
 .header-tools .notify-wrap {
@@ -2115,7 +2156,7 @@ th {
 @media (hover: hover) and (pointer: fine) {
     .navbar:not(:hover) .header-tools {
         opacity: 0;
-        transform: translateX(-34px);
+        transform: translateX(-22px);
         pointer-events: none;
     }
 
@@ -2331,6 +2372,12 @@ th {
     border: 1px solid rgba(0, 129, 198, 0.14);
 }
 
+.settings-panes {
+    margin-top: 0.85rem;
+    position: relative;
+    min-height: 320px;
+}
+
 .settings-tabs {
     display: flex;
     gap: 0.65rem;
@@ -2360,13 +2407,19 @@ th {
 }
 
 .settings-pane {
-    display: none;
-    animation: paneIn 0.25s ease;
-    margin-top: 0.85rem;
+    display: block;
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateX(18px);
+    pointer-events: none;
+    transition: opacity 0.24s ease, transform 0.3s ease;
 }
 
 .settings-pane.is-active {
-    display: block;
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
 }
 
 @keyframes paneIn {
@@ -2495,6 +2548,19 @@ body.theme-dark .qr-modal-content {
     color: var(--ink);
 }
 
+body.theme-dark .btn,
+body.theme-dark .notify-btn,
+body.theme-dark .scan-btn,
+body.theme-dark .quick-add-btn,
+body.theme-dark .menu-toggle {
+    color: #e9f5ff;
+}
+
+body.theme-dark .btn-ghost {
+    background: rgba(18, 47, 68, 0.55);
+    border-color: rgba(167, 206, 230, 0.35);
+}
+
 body.theme-dark input,
 body.theme-dark select {
     background: rgba(9, 25, 38, 0.95);
@@ -2522,6 +2588,13 @@ body.theme-dark .small,
 body.theme-dark .lead,
 body.theme-dark p {
     color: #d3e4f2;
+}
+
+body.theme-dark .notify-btn i,
+body.theme-dark .btn i,
+body.theme-dark .scan-btn i,
+body.theme-dark .quick-add-btn i {
+    color: #e9f5ff;
 }
 
 body.theme-dark .settings-tabs {
@@ -2637,6 +2710,16 @@ body.theme-dark .nav-links {
     border-color: rgba(167, 206, 230, 0.3);
 }
 
+body.theme-dark .logo-mark {
+    filter: invert(87%) sepia(19%) saturate(681%) hue-rotate(148deg) brightness(98%) contrast(97%);
+}
+
+body.theme-dark .tile-svg,
+body.theme-dark .role-icon svg,
+body.theme-dark .footer-logo-mark {
+    filter: invert(88%) sepia(17%) saturate(495%) hue-rotate(161deg) brightness(99%) contrast(98%);
+}
+
 @media (max-width: 920px) {
     .header-tools {
         margin-left: 0;
@@ -2644,6 +2727,11 @@ body.theme-dark .nav-links {
         width: 100%;
         justify-content: flex-start;
         display: none;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 18px 36px rgba(3, 41, 67, 0.15);
     }
 
     .header-tools.open {
