@@ -60,11 +60,6 @@ if ($user && isset($pdo)) {
                 <img src="assets/svg/icon.svg" alt="Logo Lanz" class="logo-mark">
                 <span>Lanz</span>
             </a>
-            <button class="menu-toggle" aria-label="Apri menu" id="menuToggle" aria-controls="navLinks" aria-expanded="false">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
             <?php if ($user): ?>
                 <div class="header-tools" id="headerTools">
                 <div class="notify-wrap">

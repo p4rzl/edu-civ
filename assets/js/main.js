@@ -1,18 +1,10 @@
-const menuToggle = document.getElementById('menuToggle');
 const navLinks = document.getElementById('navLinks');
 const headerTools = document.getElementById('headerTools');
+const navbar = document.querySelector('.navbar');
 
-if (menuToggle) {
-    menuToggle.addEventListener('click', () => {
-        const isOpen = menuToggle.classList.toggle('is-open');
-        menuToggle.setAttribute('aria-expanded', String(isOpen));
-        if (navLinks) {
-            navLinks.classList.toggle('open', isOpen);
-        }
-        if (headerTools) {
-            headerTools.classList.toggle('open', isOpen);
-        }
-    });
+const hasPrimaryLinks = Boolean(navLinks && navLinks.children.length > 0);
+if (navbar && !hasPrimaryLinks) {
+    navbar.classList.add('no-primary-nav');
 }
 
 const notifyToggle = document.getElementById('notifyToggle');
