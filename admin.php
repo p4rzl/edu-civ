@@ -502,7 +502,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<section class="section container reveal">
+<!--<section class="section container reveal">
     <h2><i class="bi bi-graph-up-arrow"></i> Analisi storica sensori</h2>
     <p class="helper-text">Visualizzazione su grafico a linee delle serie temporali registrate dalle boe (es. salinita).</p>
     <div class="card chart-card">
@@ -514,7 +514,7 @@ require_once __DIR__ . '/includes/header.php';
         </select>
         <canvas id="buoyChart" height="130"></canvas>
     </div>
-</section>
+</section> -->
 
 <div id="userEditModal" class="admin-modal" aria-hidden="true">
     <div class="admin-modal-content">
